@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HEY TAMA</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,300..800&family=DM+Mono:wght@400;500&display=swap">
+<style>
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; }
+/* Layout: sticky minimal navbar, two framed photo panels, photo category tiles, 3:4 product grid with hover swap, denim feature, lookbook sets, bag drawer that checks out to WhatsApp */
+:root {
+  --bg: #0d0d0e;
+  --surface: #17171a;
+  --surface-2: #232327;
+  --fg: #ecebe7;
+  --muted: #8f8e8a;
+  --line: #2b2b2d;
+  --inv-bg: #ecebe7;
+  --inv-fg: #0d0d0e;
+  --sale: #e58b72;
+  --photo-fg: #f4f3ef;
+  --photo-mut: #c9c8c3;
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f4f2; --surface: #e9e9e6; --surface-2: #dcdcd8; --fg: #0f0f10; --muted: #66665f;
+    --line: #d0d0cb; --inv-bg: #0f0f10; --inv-fg: #f4f4f2; --sale: #b8432c; color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f4f2; --surface: #e9e9e6; --surface-2: #dcdcd8; --fg: #0f0f10; --muted: #66665f;
+  --line: #d0d0cb; --inv-bg: #0f0f10; --inv-fg: #f4f4f2; --sale: #b8432c; color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 60; background: var(--bg); }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+img { display: block; }
+:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+.wrap { max-width: 1320px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.mono { font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+.muted { color: var(--muted); }
+.announce { background: var(--inv-bg); color: var(--inv-fg); text-align: center; padding: 8px 16px; }
+
+/* header */
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; background: var(--bg); border-bottom: 1px solid var(--line); }
+.nav { display: flex; align-items: center; gap: 28px; height: 68px; }
+.logo { font-weight: 600; font-stretch: 125%; letter-spacing: .5em; font-size: 14px; white-space: nowrap; }
+.logo i { font-style: normal; opacity: .55; }
+.menu { display: flex; gap: 26px; margin-left: auto; align-items: center; }
+.menu a, .menu button { font-size: 13.5px; padding: 6px 0; color: var(--fg); white-space: nowrap; }
+.menu a:hover, .menu button:hover { opacity: .6; }
+.dd { position: relative; }
+.dd-list { position: absolute; top: 100%; left: -12px; min-width: 190px; background: var(--surface); border: 1px solid var(--line); padding: 8px; display: none; flex-direction: column; }
+.dd.open .dd-list { display: flex; }
+.dd-list button { text-align: left; padding: 9px 12px; width: 100%; }
+.dd-list button:hover { background: var(--surface-2); opacity: 1; }
+.icons { display: flex; align-items: center; gap: 4px; }
+.ib { position: relative; width: 40px; height: 40px; display: grid; place-items: center; }
+.ib:hover { opacity: .6; }
+.ib svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.badge { position: absolute; top: 3px; right: 1px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: var(--inv-bg); color: var(--inv-fg); font-size: 10px; font-weight: 600; display: grid; place-items: center; }
+.badge:empty, .badge[data-n="0"] { display: none; }
+.burger { display: none; }
+.searchbar { display: none; border-top: 1px solid var(--line); }
+.searchbar.open { display: block; }
+.searchbar input { width: 100%; background: transparent; border: 0; color: var(--fg); font: inherit; font-size: 16px; padding: 16px 0; outline: none; }
+.searchbar input::placeholder { color: var(--muted); }
+
+/* hero */
+.hero { display: grid; grid-template-columns: 1fr 1fr; padding-block: 28px 8px; }
+.panel { position: relative; min-height: min(80vh, 680px); background: var(--surface); color: var(--photo-fg); overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding: 28px; }
+.panel > img.bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 12%; }
+.panel::after { content: ""; position: absolute; inset: auto 0 0 0; height: 58%; background: linear-gradient(180deg, transparent, rgba(8,8,9,.88)); pointer-events: none; }
+.panel.framed { border: 2px solid var(--fg); margin: 22px 22px 22px 0; }
+.panel .cap { position: absolute; top: 20px; left: 24px; z-index: 2; background: rgba(8,8,9,.55); padding: 4px 10px; backdrop-filter: blur(4px); }
+.hero-copy, .hero-link { position: relative; z-index: 2; }
+.hero h1 { font-size: clamp(36px, 5vw, 68px); font-weight: 700; font-stretch: 125%; line-height: 1; letter-spacing: -.01em; margin: 0 0 14px; text-transform: uppercase; text-wrap: balance; }
+.hero p { margin: 0 0 22px; max-width: 40ch; color: var(--photo-mut); }
+.hero-link:hover { opacity: .65; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 46px; padding: 0 26px; background: var(--inv-bg); color: var(--inv-fg); font-weight: 600; font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; transition: opacity .2s; }
+.btn:hover { opacity: .82; }
+.btn.ghost { background: transparent; color: var(--fg); border: 1px solid var(--fg); }
+.btn.ghost:hover { background: var(--fg); color: var(--bg); opacity: 1; }
+.btn.dk { background: #f4f3ef; color: #0d0d0e; }
+.btn.gh-dk { background: transparent; color: #f4f3ef; border: 1px solid #f4f3ef; }
+.btn.gh-dk:hover { background: #f4f3ef; color: #0d0d0e; opacity: 1; }
+.hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* sections */
+section { padding-block: 72px 0; }
+.sec-head { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 28px; flex-wrap: wrap; }
+.sec-head h2 { margin: 0; font-size: clamp(26px, 3.4vw, 40px); font-weight: 700; font-stretch: 125%; text-transform: uppercase; letter-spacing: -.005em; line-height: 1.05; }
+.sec-head p { margin: 6px 0 0; color: var(--muted); max-width: 52ch; }
+
+/* category tiles */
+.cats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+.cat { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: var(--surface); display: block; min-width: 0; }
+.cat img { width: 100%; height: 100%; object-fit: cover; object-position: center 15%; transition: transform .6s ease; }
+.cat:hover img { transform: scale(1.05); }
+.cat::after { content: ""; position: absolute; inset: auto 0 0 0; height: 40%; background: linear-gradient(180deg, transparent, rgba(8,8,9,.75)); }
+.cat span { position: absolute; left: 14px; bottom: 12px; z-index: 1; color: #f4f3ef; font-size: 12.5px; letter-spacing: .1em; text-transform: uppercase; font-weight: 600; }
+
+/* filter */
+.filters { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 26px; scrollbar-width: thin; }
+.chip { flex: none; height: 36px; padding: 0 16px; border: 1px solid var(--line); font-size: 12.5px; letter-spacing: .04em; white-space: nowrap; transition: .15s; }
+.chip:hover { border-color: var(--fg); }
+.chip[aria-pressed="true"] { background: var(--inv-bg); color: var(--inv-fg); border-color: var(--inv-bg); }
+
+/* product grid */
+.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px 18px; }
+.card { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.shot { position: relative; aspect-ratio: 3 / 4; max-width: 100%; background: var(--surface); overflow: hidden; }
+.shot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 12%; transition: opacity .5s ease, transform .8s ease; }
+.shot img.b { opacity: 0; }
+.card:hover .shot img.a { transform: scale(1.03); }
+.card.has2:hover .shot img.b { opacity: 1; }
+.card.has2:hover .shot img.a { opacity: 0; }
+.tag { position: absolute; top: 10px; left: 10px; z-index: 2; padding: 3px 8px; background: #f4f3ef; color: #0d0d0e; }
+.tag.sale { background: #e58b72; color: #0d0d0e; }
+.heart { position: absolute; top: 4px; right: 4px; z-index: 2; color: #0d0d0e; }
+.heart svg { filter: drop-shadow(0 0 3px rgba(255,255,255,.9)); }
+.heart[aria-pressed="true"] svg { fill: currentColor; }
+.meta h3 { margin: 0; font-size: 14.5px; font-weight: 500; line-height: 1.3; }
+.meta .cat-name { margin-bottom: 4px; display: block; }
+.meta .spec { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+.price { display: flex; gap: 10px; align-items: baseline; margin-top: 6px; font-variant-numeric: tabular-nums; }
+.price s { color: var(--muted); font-size: 13px; }
+.price b { font-weight: 600; }
+.price b.on-sale { color: var(--sale); }
+.sizes { display: flex; gap: 6px; flex-wrap: wrap; }
+.sz { min-width: 34px; height: 30px; padding: 0 8px; border: 1px solid var(--line); font-size: 12px; }
+.sz:hover { border-color: var(--fg); }
+.sz[aria-pressed="true"] { border-color: var(--fg); background: var(--fg); color: var(--bg); }
+.add { height: 40px; border: 1px solid var(--fg); font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; transition: .2s; }
+.add:hover { background: var(--fg); color: var(--bg); }
+.empty { padding: 60px 0; text-align: center; color: var(--muted); grid-column: 1 / -1; }
+
+/* denim feature */
+.feature { display: grid; grid-template-columns: 1.1fr 1fr; background: var(--surface); }
+.feature img { width: 100%; height: 100%; object-fit: cover; max-height: 560px; }
+.feature .txt { padding: clamp(28px, 5vw, 64px); display: flex; flex-direction: column; justify-content: center; gap: 16px; align-items: flex-start; min-width: 0; }
+.feature h2 { margin: 0; font-size: clamp(30px, 4vw, 52px); font-weight: 700; font-stretch: 125%; text-transform: uppercase; line-height: 1; }
+.feature p { margin: 0; color: var(--muted); max-width: 42ch; }
+
+/* lookbook */
+.looks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.look { border: 1px solid var(--line); background: var(--surface); padding: 20px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.look .strip { display: flex; gap: 4px; }
+.look .strip div { flex: 1; aspect-ratio: 3 / 4; background: var(--surface-2); overflow: hidden; min-width: 0; }
+.look .strip img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; }
+.look h3 { margin: 0; font-size: 20px; font-weight: 700; font-stretch: 120%; text-transform: uppercase; }
+.look p { margin: 4px 0 0; color: var(--muted); }
+.look ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; font-size: 13.5px; }
+.look li { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+.look li span:first-child { min-width: 0; }
+.look li span:last-child { font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+.look .btn { margin-top: auto; }
+
+/* about + contact */
+.about { display: grid; grid-template-columns: 1.1fr 1fr; gap: 56px; align-items: start; }
+.about h2 { margin: 14px 0 18px; font-size: clamp(28px, 4vw, 52px); font-weight: 700; font-stretch: 125%; text-transform: uppercase; line-height: 1; text-wrap: balance; }
+.about p { margin: 0 0 14px; color: var(--muted); max-width: 56ch; }
+.values { display: grid; border-top: 1px solid var(--line); }
+.values div { display: grid; grid-template-columns: 120px 1fr; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.values b { font-weight: 600; }
+.values span { color: var(--muted); }
+.contact { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.contact > div { background: var(--bg); padding: 28px 24px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.contact h3 { margin: 0; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.contact p { margin: 0; font-size: 17px; overflow-wrap: anywhere; }
+.contact .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: auto; padding-top: 8px; }
+.contact .btn { height: 40px; padding: 0 18px; }
+footer { margin-top: 72px; border-top: 1px solid var(--line); padding-block: 28px 40px; }
+footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+.wa { position: fixed; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 40; width: 48px; height: 48px; background: var(--inv-bg); color: var(--inv-fg); display: grid; place-items: center; border-radius: 12px; }
+.wa svg { width: 24px; height: 24px; fill: currentColor; }
+
+/* drawer */
+.scrim { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 80; opacity: 0; pointer-events: none; transition: opacity .25s; }
+.scrim.open { opacity: 1; pointer-events: auto; }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 100%); z-index: 90; background: var(--bg); border-left: 1px solid var(--line); transform: translateX(100%); transition: transform .3s ease; display: flex; flex-direction: column; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); padding-right: env(safe-area-inset-right, 0px); }
+.drawer.open { transform: none; }
+.d-head { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--line); }
+.d-head h2 { margin: 0; font-size: 14px; letter-spacing: .2em; text-transform: uppercase; font-weight: 600; }
+.d-body { flex: 1; overflow-y: auto; padding: 8px 20px; }
+.line { display: grid; grid-template-columns: 72px 1fr auto; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line); align-items: center; }
+.line .th { aspect-ratio: 3/4; background: var(--surface); overflow: hidden; }
+.line .th img { width: 100%; height: 100%; object-fit: cover; object-position: center 15%; }
+.line h4 { margin: 0; font-size: 13.5px; font-weight: 500; }
+.line small { color: var(--muted); }
+.qty { display: inline-flex; align-items: center; border: 1px solid var(--line); margin-top: 8px; }
+.qty button { width: 28px; height: 28px; }
+.qty span { min-width: 24px; text-align: center; font-size: 13px; }
+.rm { color: var(--muted); font-size: 12px; text-decoration: underline; }
+.d-foot { padding: 18px 20px 20px; border-top: 1px solid var(--line); display: grid; gap: 12px; }
+.total { display: flex; justify-content: space-between; font-weight: 600; font-variant-numeric: tabular-nums; }
+.d-empty { padding: 48px 0; text-align: center; color: var(--muted); }
+.btn.disabled { opacity: .35; pointer-events: none; }
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px); background: var(--inv-bg); color: var(--inv-fg); padding: 12px 20px; font-size: 13px; z-index: 100; opacity: 0; pointer-events: none; transition: .25s; max-width: calc(100% - 32px); }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+@media (max-width: 1100px) { .grid { grid-template-columns: repeat(3, 1fr); } .menu { gap: 18px; } }
+@media (max-width: 900px) {
+  .burger { display: grid; }
+  .nav { gap: 8px; }
+  .icons { margin-left: auto; }
+  .menu { position: absolute; top: 100%; left: 0; right: 0; background: var(--bg); border-bottom: 1px solid var(--line); flex-direction: column; align-items: stretch; gap: 0; padding: 8px max(16px, env(safe-area-inset-left, 0px)) 16px; display: none; margin: 0; }
+  .menu.open { display: flex; }
+  .menu a, .menu button { padding: 13px 0; border-bottom: 1px solid var(--line); text-align: left; width: 100%; font-size: 15px; }
+  .dd-list { position: static; border: 0; padding: 0 0 0 14px; background: transparent; }
+  .hero { grid-template-columns: 1fr; padding-top: 16px; }
+  .panel.framed { margin: 0 0 16px; min-height: 600px; }
+  .panel.p2 { min-height: 520px; }
+  .cats { grid-template-columns: repeat(2, 1fr); }
+  .feature { grid-template-columns: 1fr; }
+  .looks { grid-template-columns: 1fr; }
+  .about { grid-template-columns: 1fr; gap: 32px; }
+  .contact { grid-template-columns: 1fr; }
+  section { padding-top: 56px; }
+}
+@media (max-width: 640px) {
+  .grid { grid-template-columns: repeat(2, 1fr); gap: 24px 12px; }
+  .values div { grid-template-columns: 1fr; gap: 4px; }
+  .logo { letter-spacing: .38em; font-size: 13px; }
+}
+@media (hover: none) { .card.has2:hover .shot img.b { opacity: 0; } .card.has2:hover .shot img.a { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+
+<div class="announce mono">Gratis ongkir untuk pembelian di atas Rp500.000</div>
+
+<header class="top">
+  <div class="wrap nav">
+    <a href="#beranda" class="logo" aria-label="HEY TAMA beranda">HEY T<i>/</i>MA</a>
+    <nav class="menu" id="menu" aria-label="Menu utama">
+      <a href="#beranda">Beranda</a>
+      <a href="#koleksi" data-cat="all">Koleksi</a>
+      <a href="#best">Best Seller</a>
+      <div class="dd" id="dd">
+        <button type="button" id="ddBtn" aria-expanded="false">Kategori ▾</button>
+        <div class="dd-list" id="ddList"></div>
+      </div>
+      <a href="#koleksi" data-cat="last">Last Chance</a>
+      <a href="#lookbook">Lookbook</a>
+      <a href="#kontak">Store</a>
+    </nav>
+    <div class="icons">
+      <button class="ib" id="searchBtn" aria-label="Cari produk"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button>
+      <button class="ib" id="wishBtn" aria-label="Wishlist"><svg viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10A4.5 4.5 0 0 1 12 7.2 4.5 4.5 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/></svg><span class="badge" id="wishN" data-n="0"></span></button>
+      <button class="ib" id="bagBtn" aria-label="Buka tas belanja"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="badge" id="bagN" data-n="0"></span></button>
+      <button class="ib burger" id="burger" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+  </div>
+  <div class="searchbar" id="searchbar"><div class="wrap"><input id="q" type="search" placeholder="Cari jaket, kemeja, celana, tas..." autocomplete="off"></div></div>
+</header>
+
+<main>
+  <div class="wrap hero" id="beranda">
+    <div class="panel framed">
+      <img class="bg" src="img/p33.jpg" alt="Model memakai jaket denim hitam dengan kemeja putih">
+      <span class="cap mono">01. Pleated Denim Jacket</span>
+      <div class="hero-copy">
+        <h1>Rapi,<br>tanpa ribet.</h1>
+        <p>Kemeja, rajut, jaket, dan celana dengan potongan bersih dan warna yang mudah dipadukan.</p>
+        <div class="hero-actions">
+          <a class="btn dk" href="#koleksi" data-cat="all">Lihat Koleksi</a>
+          <a class="btn gh-dk" href="#lookbook">Lookbook</a>
+        </div>
+      </div>
+    </div>
+    <div class="panel p2">
+      <img class="bg" src="img/p02.jpg" alt="Model memakai blazer double breasted abu">
+      <span class="cap mono">02. Double Breasted Blazer</span>
+      <a class="hero-link mono" href="#koleksi" data-cat="blazer">Rp899.000 · Lihat blazer →</a>
+    </div>
+  </div>
+
+  <section id="kategori">
+    <div class="wrap">
+      <div class="sec-head"><div><h2>Kategori</h2><p>Dari kemeja sampai tas, semuanya dipilih supaya mudah dipadukan.</p></div></div>
+      <div class="cats" id="cats"></div>
+    </div>
+  </section>
+
+  <section id="best">
+    <div class="wrap">
+      <div class="sec-head"><div><h2>Best seller</h2><p>Yang paling sering dipesan.</p></div><a href="#koleksi" class="mono muted" data-cat="all">Lihat semua →</a></div>
+      <div class="grid" id="bestGrid"></div>
+    </div>
+  </section>
+
+  <section id="denim">
+    <div class="wrap">
+      <div class="feature">
+        <img src="img/denim-series.jpg" alt="Tiga jaket denim hitam dan indigo">
+        <div class="txt">
+          <span class="mono muted">Denim Series</span>
+          <h2>Jaket denim, dua warna.</h2>
+          <p>Lipit di bagian dada, kantong tersembunyi, dan kancing logam. Pilih hitam atau indigo.</p>
+          <a class="btn" href="#koleksi" data-cat="denim">Lihat jaket denim</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="koleksi">
+    <div class="wrap">
+      <div class="sec-head"><div><h2>Semua koleksi</h2><p id="countTxt"></p></div></div>
+      <div class="filters" id="filters" role="group" aria-label="Filter kategori"></div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <section id="lookbook">
+    <div class="wrap">
+      <div class="sec-head"><div><h2>Lookbook</h2><p>Tiga padu padan dari koleksi kami. Satu klik, semuanya masuk tas.</p></div></div>
+      <div class="looks" id="looks"></div>
+    </div>
+  </section>
+
+  <section id="tentang">
+    <div class="wrap about">
+      <div>
+        <span class="mono muted">Tentang Hey Tama</span>
+        <h2>Pakaian pria yang tinggal dipakai.</h2>
+        <p>Hey Tama berawal dari satu kebutuhan: tampil rapi tanpa menghabiskan waktu memilih. Potongannya bersih, warnanya tenang, dan bahannya tetap nyaman setelah seharian.</p>
+        <p>Semua item bisa dipadukan satu sama lain. Satu kemeja ivory, satu celana abu, dan satu jaket denim hitam sudah cukup untuk seminggu.</p>
+      </div>
+      <div class="values">
+        <div><b>Potongan</b><span>Rapi dan pas di badan, tanpa logo besar.</span></div>
+        <div><b>Warna</b><span>Hitam, abu, krem, dan hijau botol.</span></div>
+        <div><b>Bahan</b><span>Katun, rajut, wool blend, dan denim.</span></div>
+        <div><b>Ukuran</b><span>S sampai XL. Tanya ukuran lewat WhatsApp sebelum pesan.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="kontak">
+    <div class="wrap">
+      <div class="sec-head"><div><h2>Store</h2><p>Coba langsung di toko atau pesan lewat WhatsApp.</p></div></div>
+      <div class="contact">
+        <div><h3>Offline store</h3><p>Puri Indah Mall<br>Jl. Puri Agung, Kembangan<br>Jakarta Barat</p><span class="mono muted">Setiap hari · 10.00 – 22.00</span></div>
+        <div><h3>WhatsApp &amp; telepon</h3><p id="phoneTxt">0882-8913-4376</p><div class="row"><a class="btn" id="waBtn" href="#" target="_blank" rel="noopener">Chat WhatsApp</a></div></div>
+        <div><h3>Email</h3><p id="emailTxt">tamaaasfr@gmail.com</p><div class="row"><button class="btn ghost" id="copyMail" type="button">Salin email</button></div></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="logo">HEY T<i>/</i>MA</span>
+    <span class="mono muted">© 2026 Hey Tama · Menswear</span>
+  </div>
+</footer>
+
+<a class="wa" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Chat WhatsApp"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.4A10 10 0 1 0 12 2zm5.2 13.9c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 1-2.2.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.3.4-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.2 1.4 2.5 1.5.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg></a>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Tas belanja" aria-hidden="true">
+  <div class="d-head"><h2>Tas belanja</h2><button class="ib" id="closeBag" aria-label="Tutup"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="d-body" id="bagList"></div>
+  <div class="d-foot">
+    <div class="total"><span>Total</span><span id="bagTotal">Rp0</span></div>
+    <a class="btn disabled" id="checkout" href="#" target="_blank" rel="noopener">Pesan via WhatsApp</a>
+    <span class="mono muted" style="text-align:center">Pembayaran dan ongkir dikonfirmasi lewat chat</span>
+  </div>
+</aside>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+// Nomor WhatsApp toko (format internasional tanpa + atau 0 di depan)
+const WA_NUMBER = "6288289134376";
+
+const CATS = [
+  { id: "blazer", name: "Blazer", img: "p02" },
+  { id: "kemeja", name: "Kemeja", img: "p03" },
+  { id: "rajut", name: "Rajut", img: "p04" },
+  { id: "polo", name: "Polo", img: "p07" },
+  { id: "kaos", name: "Kaos", img: "p09" },
+  { id: "jaket", name: "Jaket", img: "p13" },
+  { id: "denim", name: "Jaket Denim", img: "p12" },
+  { id: "vest", name: "Vest", img: "p25" },
+  { id: "celana", name: "Celana", img: "p14" },
+  { id: "tas", name: "Tas", img: "p28" }
+];
+
+// img: foto utama (dan foto kedua yang muncul saat kursor diarahkan). Foto ada di folder img/.
+const P = [
+  { id: 1, n: "Keyhole Tee Forest", c: "kaos", p: 219000, sale: 169000, last: 1, m: "Katun poplin · Lengan 3/4", img: ["p01"] },
+  { id: 2, n: "Double Breasted Blazer Heather Grey", c: "blazer", p: 899000, m: "Wool blend tweed · Relaxed fit", img: ["p02"] },
+  { id: 3, n: "Concealed Placket Shirt Ivory", c: "kemeja", p: 349000, m: "Poplin · Regular fit", img: ["p03"] },
+  { id: 4, n: "Cable Knit Sweater Mocha", c: "rajut", p: 399000, m: "Rajut katun · Oversized", img: ["p04"] },
+  { id: 5, n: "Cable Knit Sweater Cream", c: "rajut", p: 399000, sale: 319000, last: 1, m: "Rajut katun · Oversized", img: ["p05"] },
+  { id: 6, n: "Knit Polo Long Sleeve Ivory", c: "polo", p: 349000, m: "Rajut halus · Relaxed fit", img: ["p06"] },
+  { id: 7, n: "Knit Polo Long Sleeve Charcoal", c: "polo", p: 349000, best: 1, m: "Rajut halus · Relaxed fit", img: ["p07"] },
+  { id: 8, n: "Piped Boxy Tee White", c: "kaos", p: 229000, m: "Katun 240 gsm · Boxy fit", img: ["p08"] },
+  { id: 9, n: "Piped Boxy Tee Black", c: "kaos", p: 229000, best: 1, m: "Katun 240 gsm · Boxy fit", img: ["p09"] },
+  { id: 10, n: "Textured Knit Polo Taupe", c: "polo", p: 329000, m: "Rajut tekstur · Lengan pendek", img: ["p10"] },
+  { id: 11, n: "Oxford Button-Down Shirt Espresso", c: "kemeja", p: 369000, m: "Oxford cotton · Regular fit", img: ["p11"] },
+  { id: 12, n: "Pleated Denim Jacket Black", c: "denim", p: 569000, best: 1, m: "Denim 12 oz · Regular fit", img: ["p12", "p32", "p33"] },
+  { id: 13, n: "Zip Crop Jacket Grey", c: "jaket", p: 529000, m: "Katun twill · Cropped fit", img: ["p13"] },
+  { id: 14, n: "Wide Leg Denim Black", c: "celana", p: 459000, best: 1, sz: "p", m: "Denim hitam · Wide fit", img: ["p14"] },
+  { id: 15, n: "Half Zip Knit Sweater White", c: "rajut", p: 429000, m: "Rajut tebal · Regular fit", img: ["p15"] },
+  { id: 16, n: "Drawstring Trousers Sand", c: "celana", p: 389000, sz: "p", m: "Katun twill · Straight fit", img: ["p16"] },
+  { id: 17, n: "Half Zip Pullover Ecru", c: "jaket", p: 399000, m: "Katun twill · Regular fit", img: ["p17"] },
+  { id: 18, n: "Double Pocket Zip Jacket Black", c: "jaket", p: 549000, m: "Katun twill · Regular fit", img: ["p18"] },
+  { id: 19, n: "Easy Trousers Black", c: "celana", p: 379000, best: 1, sz: "p", m: "Poly blend · Pinggang karet", img: ["p19"] },
+  { id: 20, n: "Cuffed Wool Trousers Grey", c: "celana", p: 429000, sz: "p", m: "Wool blend · Straight fit", img: ["p20"] },
+  { id: 21, n: "Cuffed Trousers White", c: "celana", p: 429000, sale: 329000, last: 1, sz: "p", m: "Twill · Straight fit", img: ["p21"] },
+  { id: 22, n: "Tapered Trousers Espresso", c: "celana", p: 399000, sz: "p", m: "Katun twill · Tapered fit", img: ["p22"] },
+  { id: 23, n: "Wide Sweatpants Grey Melange", c: "celana", p: 329000, sz: "p", m: "Fleece · Wide fit", img: ["p23"] },
+  { id: 24, n: "Tailored Vest Camel", c: "vest", p: 379000, m: "Poly viscose · Regular fit", img: ["p24"] },
+  { id: 25, n: "Utility Vest White", c: "vest", p: 399000, sale: 299000, last: 1, m: "Katun seersucker · Boxy fit", img: ["p25"] },
+  { id: 26, n: "Leather Backpack Black", c: "tas", p: 749000, one: 1, m: "Kulit sintetis premium", img: ["p26"] },
+  { id: 27, n: "Flap Backpack Black", c: "tas", p: 549000, one: 1, m: "Nylon water resistant", img: ["p27"] },
+  { id: 28, n: "Hobo Bag Black", c: "tas", p: 489000, best: 1, one: 1, m: "Kulit sintetis · Strap adjustable", img: ["p28"] },
+  { id: 29, n: "Hobo Bag Dove Grey", c: "tas", p: 489000, sale: 389000, last: 1, one: 1, m: "Kulit sintetis · Strap adjustable", img: ["p29"] },
+  { id: 30, n: "Weekender Duffle Black", c: "tas", p: 899000, one: 1, m: "Kulit sintetis · Muat laptop 14 inci", img: ["p30"] },
+  { id: 31, n: "Pleated Denim Jacket Indigo", c: "denim", p: 569000, m: "Denim 12 oz · Regular fit", img: ["p31"] },
+  { id: 32, n: "Coach Jacket Set Black", c: "jaket", p: 899000, m: "Jaket + celana · Wool blend", img: ["p34"] }
+];
+
+const LOOKS = [
+  { n: "Office", d: "Untuk rapat dan presentasi.", items: [2, 3, 20, 26] },
+  { n: "Smart Casual", d: "Santai, tapi tetap rapi.", items: [7, 19, 27] },
+  { n: "Weekend", d: "Denim hitam dan layer ringan.", items: [12, 8, 14, 28] }
+];
+
+const $ = (s, r = document) => r.querySelector(s);
+const rp = n => "Rp" + n.toLocaleString("id-ID");
+const catName = id => (CATS.find(c => c.id === id) || {}).name || "";
+const byId = id => P.find(x => x.id === id);
+const price = x => x.sale || x.p;
+const src = k => `img/${k}.jpg`;
+const sizesOf = x => x.one ? ["All size"] : x.sz === "p" ? ["29", "30", "31", "32", "33"] : ["S", "M", "L", "XL"];
+const state = { cat: "all", q: "", wish: new Set(), size: {}, bag: new Map() };
+P.forEach(x => state.size[x.id] = x.one ? "All size" : x.sz === "p" ? "31" : "M");
+
+/* Kontak */
+const waLink = txt => `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(txt)}`;
+const waHello = waLink("Halo Hey Tama, saya mau tanya produk.");
+$("#waBtn").href = waHello; $("#waFloat").href = waHello;
+$("#copyMail").addEventListener("click", () => {
+  const t = $("#emailTxt").textContent;
+  const sel = () => { const r = document.createRange(); r.selectNodeContents($("#emailTxt")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); };
+  try { navigator.clipboard.writeText(t).then(() => toast("Email disalin"), () => { sel(); toast("Email terpilih, tekan salin"); }); }
+  catch (e) { sel(); toast("Email terpilih, tekan salin"); }
+});
+
+/* Render */
+function card(x) {
+  const tag = x.sale ? `<span class="tag sale mono">Last chance</span>` : x.best ? `<span class="tag mono">Best seller</span>` : "";
+  const two = x.img.length > 1;
+  return `<article class="card${two ? " has2" : ""}" data-id="${x.id}">
+    <div class="shot"><img class="a" src="${src(x.img[0])}" alt="${x.n}" loading="lazy" decoding="async">${two ? `<img class="b" src="${src(x.img[1])}" alt="" loading="lazy" decoding="async">` : ""}${tag}
+      <button class="ib heart" data-act="wish" aria-pressed="${state.wish.has(x.id)}" aria-label="Simpan ke wishlist"><svg viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10A4.5 4.5 0 0 1 12 7.2 4.5 4.5 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/></svg></button>
+    </div>
+    <div class="meta"><span class="cat-name mono muted">${catName(x.c)}</span><h3>${x.n}</h3><div class="spec">${x.m || ""}</div>
+      <div class="price">${x.sale ? `<b class="on-sale">${rp(x.sale)}</b><s>${rp(x.p)}</s>` : `<b>${rp(x.p)}</b>`}</div></div>
+    <div class="sizes" role="group" aria-label="Pilih ukuran">${sizesOf(x).map(s => `<button class="sz" data-act="size" data-s="${s}" aria-pressed="${state.size[x.id] === s}">${s}</button>`).join("")}</div>
+    <button class="add" data-act="add">Tambah ke tas</button>
+  </article>`;
+}
+function filtered() {
+  const q = state.q.trim().toLowerCase();
+  return P.filter(x => {
+    if (state.cat === "last" && !x.last) return false;
+    if (state.cat === "wish" && !state.wish.has(x.id)) return false;
+    if (!["all", "last", "wish"].includes(state.cat) && x.c !== state.cat) return false;
+    if (q && !(x.n + " " + catName(x.c)).toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+function renderGrid() {
+  const list = filtered();
+  $("#grid").innerHTML = list.length ? list.map(card).join("") : `<div class="empty">Belum ada produk yang cocok. Coba kategori lain.</div>`;
+  const label = state.cat === "all" ? "Semua kategori" : state.cat === "last" ? "Last chance" : state.cat === "wish" ? "Wishlist" : catName(state.cat);
+  $("#countTxt").textContent = `${label} · ${list.length} produk`;
+  document.querySelectorAll("#filters .chip").forEach(b => b.setAttribute("aria-pressed", b.dataset.cat === state.cat));
+}
+function renderBest() { $("#bestGrid").innerHTML = P.filter(x => x.best).slice(0, 4).map(card).join(""); }
+function renderAll() { renderGrid(); renderBest(); $("#wishN").textContent = state.wish.size || ""; $("#wishN").dataset.n = state.wish.size; }
+
+const chips = [["all", "Semua"], ...CATS.map(c => [c.id, c.name]), ["last", "Last Chance"]];
+$("#filters").innerHTML = chips.map(([id, n]) => `<button class="chip" data-cat="${id}" aria-pressed="false">${n}</button>`).join("");
+$("#cats").innerHTML = CATS.map(c => `<a class="cat" href="#koleksi" data-cat="${c.id}"><img src="${src(c.img)}" alt="" loading="lazy" decoding="async"><span>${c.name}</span></a>`).join("");
+$("#ddList").innerHTML = CATS.map(c => `<button type="button" data-cat="${c.id}">${c.name}</button>`).join("");
+$("#looks").innerHTML = LOOKS.map((l, i) => {
+  const its = l.items.map(byId);
+  return `<article class="look"><div class="strip">${its.map(x => `<div><img src="${src(x.img[0])}" alt="${x.n}" loading="lazy" decoding="async"></div>`).join("")}</div>
+    <div><h3>${l.n}</h3><p>${l.d}</p></div>
+    <ul>${its.map(x => `<li><span>${x.n}</span><span>${rp(price(x))}</span></li>`).join("")}</ul>
+    <button class="btn ghost" data-look="${i}">Tambah satu look · ${rp(its.reduce((s, x) => s + price(x), 0))}</button></article>`;
+}).join("");
+
+/* Interaksi */
+function setCat(c, scroll) { state.cat = c; renderGrid(); if (scroll) $("#koleksi").scrollIntoView({ behavior: "smooth" }); }
+document.addEventListener("click", e => {
+  const catEl = e.target.closest("[data-cat]");
+  if (catEl && !catEl.closest("#grid")) {
+    const isLink = catEl.tagName === "A";
+    setCat(catEl.dataset.cat, !isLink || catEl.getAttribute("href") === "#koleksi");
+    $("#dd").classList.remove("open"); $("#menu").classList.remove("open");
+    if (isLink) e.preventDefault();
+  }
+  if (!e.target.closest("#dd")) $("#dd").classList.remove("open");
+  if (e.target.closest("#menu a[href^='#']")) $("#menu").classList.remove("open");
+});
+$("#ddBtn").addEventListener("click", () => { const o = $("#dd").classList.toggle("open"); $("#ddBtn").setAttribute("aria-expanded", o); });
+$("#burger").addEventListener("click", () => $("#menu").classList.toggle("open"));
+$("#searchBtn").addEventListener("click", () => {
+  const sb = $("#searchbar"); sb.classList.toggle("open");
+  if (sb.classList.contains("open")) $("#q").focus(); else { $("#q").value = ""; state.q = ""; renderGrid(); }
+});
+$("#q").addEventListener("input", e => { state.q = e.target.value; state.cat = "all"; renderGrid(); $("#koleksi").scrollIntoView({ behavior: "smooth" }); });
+$("#wishBtn").addEventListener("click", () => setCat(state.cat === "wish" ? "all" : "wish", true));
+
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  const art = b.closest(".card"); const id = +art.dataset.id; const x = byId(id);
+  if (b.dataset.act === "size") { state.size[id] = b.dataset.s; renderAll(); }
+  if (b.dataset.act === "wish") { state.wish.has(id) ? state.wish.delete(id) : state.wish.add(id); renderAll(); toast(state.wish.has(id) ? "Disimpan ke wishlist" : "Dihapus dari wishlist"); }
+  if (b.dataset.act === "add") { addBag(id, state.size[id]); toast(`${x.n} (${state.size[id]}) masuk ke tas`); }
+});
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-look]"); if (!b) return;
+  LOOKS[+b.dataset.look].items.forEach(id => addBag(id, state.size[id]));
+  toast("Satu look masuk ke tas. Ukuran bisa diubah dari kartu produk."); openBag();
+});
+
+const keyOf = (id, s) => id + "|" + s;
+function addBag(id, s) { const k = keyOf(id, s); state.bag.set(k, (state.bag.get(k) || 0) + 1); renderBag(); }
+function renderBag() {
+  let n = 0, total = 0, html = "", msg = [];
+  state.bag.forEach((q, k) => {
+    const [id, s] = k.split("|"); const x = byId(+id); n += q; total += price(x) * q;
+    msg.push(`- ${x.n} (${s}) x${q} = ${rp(price(x) * q)}`);
+    html += `<div class="line"><div class="th"><img src="${src(x.img[0])}" alt=""></div><div><h4>${x.n}</h4><small>${s} · ${rp(price(x))}</small>
+      <div class="qty"><button data-q="-1" data-k="${k}" aria-label="Kurangi">−</button><span>${q}</span><button data-q="1" data-k="${k}" aria-label="Tambah">+</button></div></div>
+      <button class="rm" data-rm="${k}">Hapus</button></div>`;
+  });
+  $("#bagList").innerHTML = html || `<div class="d-empty">Tas belanja masih kosong.<br>Pilih ukuran lalu tekan "Tambah ke tas".</div>`;
+  $("#bagTotal").textContent = rp(total);
+  $("#bagN").textContent = n || ""; $("#bagN").dataset.n = n;
+  const co = $("#checkout");
+  co.classList.toggle("disabled", !n);
+  co.href = n ? waLink(`Halo Hey Tama, saya mau pesan:\n${msg.join("\n")}\nTotal: ${rp(total)}\n\nMohon info ongkir dan cara pembayarannya.`) : "#";
+}
+$("#bagList").addEventListener("click", e => {
+  const q = e.target.closest("[data-q]"), r = e.target.closest("[data-rm]");
+  if (q) { const k = q.dataset.k, v = state.bag.get(k) + +q.dataset.q; v > 0 ? state.bag.set(k, v) : state.bag.delete(k); renderBag(); }
+  if (r) { state.bag.delete(r.dataset.rm); renderBag(); }
+});
+function openBag() { $("#drawer").classList.add("open"); $("#scrim").classList.add("open"); $("#drawer").setAttribute("aria-hidden", "false"); }
+function closeBag() { $("#drawer").classList.remove("open"); $("#scrim").classList.remove("open"); $("#drawer").setAttribute("aria-hidden", "true"); }
+$("#bagBtn").addEventListener("click", openBag);
+$("#closeBag").addEventListener("click", closeBag);
+$("#scrim").addEventListener("click", closeBag);
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeBag(); });
+let tt;
+function toast(t) { const el = $("#toast"); el.textContent = t; el.classList.add("show"); clearTimeout(tt); tt = setTimeout(() => el.classList.remove("show"), 2200); }
+
+renderAll(); renderBag();
+</script>
+</body>
+</html>
